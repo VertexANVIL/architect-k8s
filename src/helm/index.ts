@@ -1,0 +1,222 @@
+import fs = require('node:fs/promises');
+import os = require('os');
+import util = require('util');
+import path = require('path');
+import YAML = require('yaml');
+
+import { execFile } from 'node:child_process';
+import { Resource } from '../resource';
+
+export class Helm {
+    /**
+     * Renders a Helm chart from parameters.
+     */
+    public static async template(chart: string, values: any, config: HelmChartOpts): Promise<Resource[]> {
+        const params: string[] = [];
+
+        // template operation
+        params.push("template");
+
+        // release name
+        if (config.releaseName !== undefined) {
+            params.push(config.releaseName);
+        } else {
+            params.push(chart);
+        }
+
+        // chart name
+        params.push(chart);
+
+        // Helm parameters
+        if (config.apiVersions !== undefined) {
+            params.push("--api-versions", config.apiVersions.join(','));
+        }
+
+        if (config.caFile !== undefined) {
+            params.push("--ca-file", config.caFile);
+        }
+
+        if (config.certFile !== undefined) {
+            params.push("--cert-file", config.certFile);
+        }
+
+        if (config.includeCRDs === true) {
+            params.push("--include-crds");
+        }
+
+        if (config.insecureSkipTLSVerify === true) {
+            params.push("--insecure-skip-tls-verify");
+        }
+
+        if (config.isUpgrade === true) {
+            params.push("--is-upgrade");
+        }
+
+        if (config.keyFile !== undefined) {
+            params.push("--key-file", config.keyFile);
+        }
+
+        if (config.keyring !== undefined) {
+            params.push("--keyring", config.keyring);
+        }
+
+        if (config.kubeVersion !== undefined) {
+            params.push("--kube-version", config.kubeVersion);
+        }
+
+        if (config.noHooks === true) {
+            params.push("--no-hooks");
+        }
+
+        if (config.passCredentials === true) {
+            params.push("--pass-credentials");
+        }
+
+        if (config.password !== undefined) {
+            params.push("--password", config.password);
+        }
+
+        if (config.renderSubchartNotes === true) {
+            params.push("--render-subchart-notes");
+        }
+
+        if (config.skipCrds === true) {
+            params.push("--skip-crds");
+        }
+
+        if (config.skipTests === true) {
+            params.push("--skip-tests");
+        }
+
+        if (config.username !== undefined) {
+            params.push("--username", config.username);
+        }
+
+        if (config.namespace !== undefined) {
+            params.push("--namespace", config.namespace);
+        }
+
+        params.push("--disable-openapi-validation")
+        params.push("--repo", config.repo);
+        params.push("--version", config.version);
+
+        const dir = await fs.mkdtemp(path.join(os.tmpdir(), 'akim-'));
+        const valuesFile = path.join(dir, "values.yaml");
+
+        try {
+            await fs.writeFile(valuesFile, YAML.stringify(values));
+            const execFileAsync = util.promisify(execFile);
+
+            const buf = await execFileAsync("helm", params.concat("--values", valuesFile));
+            const all = YAML.parseAllDocuments(buf.toString());
+            return all.map(doc => doc.toJS()).filter(d => d != null);
+        } finally {
+            await fs.rm(dir, {
+                force: true,
+                recursive: true
+            })
+        }
+    };
+}
+
+export interface HelmChartOpts {
+    /**
+     * Kubernetes api versions used for Capabilities.APIVersions
+     */
+    apiVersions?: string[];
+
+    /**
+     * verify certificates of HTTPS-enabled servers using this CA bundle
+     */
+    caFile?: string;
+
+    /**
+     * identify HTTPS client using this SSL certificate file
+     */
+    certFile?: string;
+
+    /**
+     * include CRDs in the templated output
+     */
+    includeCRDs?: boolean;
+
+    /**
+     * skip tls certificate checks for the chart download
+     */
+    insecureSkipTLSVerify?: boolean;
+
+    /**
+     * set .Release.IsUpgrade instead of .Release.IsInstall
+     */
+    isUpgrade?: boolean;
+
+    /**
+     * identify HTTPS client using this SSL key file
+     */
+    keyFile?: string;
+
+    /**
+     * location of public keys used for verification
+     */
+    keyring?: string;
+
+    /**
+     * Kubernetes version used for Capabilities.KubeVersion
+     */
+    kubeVersion?: string;
+
+    /**
+     * prevent hooks from running during install
+     */
+    noHooks?: boolean;
+
+    /**
+     * pass credentials to all domains
+     */
+    passCredentials?: boolean;
+
+    /**
+     * chart repository password where to locate the requested chart
+     */
+    password?: string;
+    
+    /**
+     * if set, render subchart notes along with the parent
+     */
+    renderSubchartNotes?: boolean;
+
+    /**
+     * chart repository url where to locate the requested chart
+     */
+    repo: string;
+
+    /**
+     * if set, no CRDs will be installed. By default, CRDs are installed if not already present
+     */
+    skipCrds?: boolean;
+
+    /**
+     * skip tests from templated output
+     */
+    skipTests?: boolean;
+
+    /**
+     * chart repository username where to locate the requested chart
+     */
+    username?: string;
+
+    /**
+     * specify a version constraint for the chart version to use. This constraint can be a specific tag (e.g. 1.1.1) or it may reference a valid range (e.g. ^2.0.0). If this is not specified, the latest version is used
+     */
+    version: string;
+
+    /**
+     * namespace scope for this request
+     */
+    namespace?: string;
+
+    /**
+     * release name override for the chart
+     */
+    releaseName?: string;
+}

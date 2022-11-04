@@ -1,5 +1,9 @@
 {
-  "name": "architect-k8s",
+  "name": "@akim/architect-k8s",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ArctarusLimited/architect-k8s.git"
+  },
   "scripts": {
     "build": "npx projen build",
     "bump": "npx projen bump",
@@ -14,74 +18,52 @@
     "pre-compile": "npx projen pre-compile",
     "release": "npx projen release",
     "test": "npx projen test",
-    "test:watch": "npx projen test:watch",
     "unbump": "npx projen unbump",
     "upgrade": "npx projen upgrade",
     "watch": "npx projen watch",
     "projen": "npx projen"
   },
+  "author": {
+    "name": "Arctarus Limited",
+    "email": "info@arctarus.co.uk",
+    "url": "https://www.arctarus.co.uk",
+    "organization": true
+  },
   "devDependencies": {
-    "@types/jest": "^29.2.0",
+    "@kubernetes-models/crd-generate": "*",
+    "@kubernetes-models/openapi-generate": "*",
+    "@types/js-yaml": "*",
+    "@types/lodash": "^4.14.186",
     "@types/node": "^14",
+    "@types/semver": "^7.3.13",
+    "@types/uuid": "^8.3.4",
     "@typescript-eslint/eslint-plugin": "^5",
     "@typescript-eslint/parser": "^5",
     "eslint": "^8",
     "eslint-import-resolver-node": "^0.3.6",
     "eslint-import-resolver-typescript": "^3.5.2",
     "eslint-plugin-import": "^2.26.0",
-    "jest": "^29.2.2",
-    "jest-junit": "^13",
     "json-schema": "^0.4.0",
     "npm-check-updates": "^16",
     "projen": "^0.65.6",
     "standard-version": "^9",
-    "ts-jest": "^29.0.3",
     "ts-node": "^10.9.1",
     "typescript": "^4.8.4"
   },
-  "main": "lib/index.js",
-  "license": "Apache-2.0",
-  "version": "0.0.0",
-  "jest": {
-    "testMatch": [
-      "<rootDir>/src/**/__tests__/**/*.ts?(x)",
-      "<rootDir>/(test|src)/**/*(*.)@(spec|test).ts?(x)"
-    ],
-    "clearMocks": true,
-    "collectCoverage": true,
-    "coverageReporters": [
-      "json",
-      "lcov",
-      "clover",
-      "cobertura",
-      "text"
-    ],
-    "coverageDirectory": "coverage",
-    "coveragePathIgnorePatterns": [
-      "/node_modules/"
-    ],
-    "testPathIgnorePatterns": [
-      "/node_modules/"
-    ],
-    "watchPathIgnorePatterns": [
-      "/node_modules/"
-    ],
-    "reporters": [
-      "default",
-      [
-        "jest-junit",
-        {
-          "outputDirectory": "test-reports"
-        }
-      ]
-    ],
-    "preset": "ts-jest",
-    "globals": {
-      "ts-jest": {
-        "tsconfig": "tsconfig.dev.json"
-      }
-    }
+  "dependencies": {
+    "@akim/architect": "link:../architect",
+    "@kosko/require": "*",
+    "fast-safe-stringify": "^2.1.1",
+    "js-yaml": "^4.1.0",
+    "kubernetes-models": "*",
+    "lodash": "^4.17.21",
+    "reflect-metadata": "^0.1.13",
+    "semver": "^7.3.8",
+    "uuid": "^9.0.0"
   },
+  "main": "lib/index.js",
+  "license": "MIT",
+  "version": "0.0.0",
   "types": "lib/index.d.ts",
   "resolutions": {
     "@types/responselike": "1.0.0",
