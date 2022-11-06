@@ -22,8 +22,11 @@ const project = new typescript.TypeScriptProject({
     'reflect-metadata',
     'fast-safe-stringify',
     'js-yaml',
+    'yaml',
     '@kosko/require',
+    '@kubernetes-models/apimachinery',
     '@akim/architect@link:../architect',
+    '@akim/architect-k8s-crds@link:../architect-k8s-crds',
   ],
 
   devDeps: [

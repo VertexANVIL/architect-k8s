@@ -52,14 +52,17 @@
   },
   "dependencies": {
     "@akim/architect": "link:../architect",
+    "@akim/architect-k8s-crds": "link:../architect-k8s-crds",
     "@kosko/require": "*",
+    "@kubernetes-models/apimachinery": "*",
     "fast-safe-stringify": "^2.1.1",
     "js-yaml": "^4.1.0",
     "kubernetes-models": "*",
     "lodash": "^4.17.21",
     "reflect-metadata": "^0.1.13",
     "semver": "^7.3.8",
-    "uuid": "^9.0.0"
+    "uuid": "^9.0.0",
+    "yaml": "^2.1.3"
   },
   "main": "lib/index.js",
   "license": "MIT",

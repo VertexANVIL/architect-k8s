@@ -93,12 +93,21 @@
       "type": "override"
     },
     {
+      "name": "@akim/architect-k8s-crds",
+      "version": "link:../architect-k8s-crds",
+      "type": "runtime"
+    },
+    {
       "name": "@akim/architect",
       "version": "link:../architect",
       "type": "runtime"
     },
     {
       "name": "@kosko/require",
+      "type": "runtime"
+    },
+    {
+      "name": "@kubernetes-models/apimachinery",
       "type": "runtime"
     },
     {
@@ -127,6 +136,10 @@
     },
     {
       "name": "uuid",
+      "type": "runtime"
+    },
+    {
+      "name": "yaml",
       "type": "runtime"
     }
   ],

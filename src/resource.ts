@@ -1,4 +1,4 @@
-import { IObjectMeta } from "@kubernetes-models/apimachinery/apis/meta/v1/ObjectMeta";
+import { IObjectMeta } from '@kubernetes-models/apimachinery/apis/meta/v1/ObjectMeta';
 
 /**
  * Represents the full API kind of a Kubernetes API resource
@@ -14,5 +14,6 @@ export interface ResourceKind {
 export interface Resource extends ResourceKind {
   metadata?: IObjectMeta;
   spec?: any;
-  [key: string]: unknown;
 };
+
+export type ResourceConstructor = new (data: Resource) => Resource;
