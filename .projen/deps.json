@@ -111,6 +111,10 @@
       "type": "runtime"
     },
     {
+      "name": "fast-glob",
+      "type": "runtime"
+    },
+    {
       "name": "fast-safe-stringify",
       "type": "runtime"
     },
@@ -132,6 +136,10 @@
     },
     {
       "name": "semver",
+      "type": "runtime"
+    },
+    {
+      "name": "ts-node",
       "type": "runtime"
     },
     {

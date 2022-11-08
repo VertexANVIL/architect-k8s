@@ -1,4 +1,7 @@
+import 'ts-node';
 import { importPath } from '@kosko/require';
+// eslint-disable-next-line no-duplicate-imports
+import { REGISTER_INSTANCE } from 'ts-node';
 import { ResourceConstructor } from '../resource';
 import { GVK } from './gvk';
 
@@ -29,22 +32,22 @@ export class TypeRegistry {
   private crdModulePaths: string[] = [];
 
   /**
-     * Sets the path for Kubernetes API models.
-     */
+   * Sets the path for Kubernetes API models.
+   */
   public setAPIModule(module: string) {
     this.apiModulePath = module;
   };
 
   /**
-     * Appends a module dir to the CRD search path
-     */
+   * Appends a module dir to the CRD search path.
+   */
   public appendCRDModule(dir: string) {
     this.crdModulePaths.push(dir);
   };
 
   /**
-     * Gets the constructor for a model GVK
-     */
+   * Gets the constructor for a model GVK
+   */
   public async getConstructor(gvk: GVK): Promise<ResourceConstructor | null> {
     const path = gvkToPath(gvk);
     const ctor = this.ctorCache[path] ?? this.getAndCacheModule(gvk);
@@ -65,11 +68,13 @@ export class TypeRegistry {
     if (gvk.group && gvk.group.includes('.') && !gvk.group.endsWith('.k8s.io')) {
       // CRD, try everything till we find a match
       for (const crdPath of this.crdModulePaths) {
-        let tryPath = `${crdPath}/${gvkPath}`;
+        let tryPath: string;
 
-        // if the CRD path ends with "src" we're loading via ts-node, append the .ts extension
-        if (crdPath.endsWith('/src')) {
-          tryPath += '.ts';
+        // if we're loading via ts-node ensure we append the right dir and extension
+        if (process[REGISTER_INSTANCE]) {
+          tryPath = `${crdPath}/src/${gvkPath}.ts`;
+        } else {
+          tryPath = `${crdPath}/lib/${gvkPath}.js`;
         };
 
         mod = await tryImport(tryPath);

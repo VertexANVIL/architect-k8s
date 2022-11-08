@@ -1,5 +1,6 @@
 import 'reflect-metadata';
 import { BaseFact } from '@akim/architect/src';
+import _ from 'lodash';
 
 interface ClusterClientSpec {
   context: string;
@@ -15,8 +16,8 @@ interface ClusterNamespaceSpec {
 // "Do you want to update the metal spec before deploying? (--auto-update-metal to bypass check)"
 interface ClusterMetalSpec {
   /**
-     * Number of nodes in the physical cluster
-     */
+   * Number of nodes in the physical cluster
+   */
   nodes?: number;
 };
 
@@ -31,4 +32,17 @@ export interface ClusterSpec {
 };
 
 @Reflect.metadata('uuid', '6adbc9ab-fecc-4578-aede-1c61268bf13d')
-export class ClusterFact extends BaseFact<ClusterSpec> {};
+export class ClusterFact extends BaseFact<ClusterSpec> {
+  constructor(instance: ClusterSpec) {
+    const defaults = {
+      ns: {
+        features: 'infra-system',
+        operators: 'operator-system',
+        services: 'services',
+      },
+    };
+
+    instance = _.merge(defaults, instance);
+    super(instance);
+  };
+};

@@ -1,5 +1,7 @@
-import { Component } from '@akim/architect/src';
+import { CapabilityMatcher, Component, Target } from '@akim/architect/src';
+import { IComponentMatcher } from '@akim/architect/src/component';
 import _ from 'lodash';
+import { CNICapability, DNSCapability } from './capabilities';
 
 import { ClusterFact, ClusterSpec } from './cluster';
 import { KubeExtension } from './extension';
@@ -8,10 +10,32 @@ import { Resource } from './resource';
 import { defaultNamespace, fixupResource } from './utils';
 
 export abstract class KubeComponent extends Component {
+  constructor(target: Target) {
+    super(target);
+
+    if (!this.extension) {
+      throw Error('The Kubernetes extension must be registered against the current Target before components may be created.');
+    };
+
+    if (!this.cluster) {
+      throw Error('The Kubernetes cluster fact does not seem to be registered. Please ensure the extension has been initialised correctly.');
+    };
+  };
+
   /**
-     * Returns the default namespace for all resources within this Component.
-     * If not set, this will default to the "default" namespace.
-     */
+   * Returns the default set of requirements.
+   */
+  public get requirements(): IComponentMatcher[] {
+    return [
+      new CapabilityMatcher(CNICapability),
+      new CapabilityMatcher(DNSCapability),
+    ];
+  };
+
+  /**
+   * Returns the default namespace for all resources within this Component.
+   * If not set, this will default to the "default" namespace.
+   */
   public get namespace(): string {
     return 'default';
   }
@@ -43,8 +67,8 @@ export abstract class KubeComponent extends Component {
   };
 
   /**
-     * Wrapper for Helm.template that inserts our default namespace and configuration
-     */
+   * Wrapper for Helm.template that inserts our default namespace and configuration
+   */
   protected async helmTemplate(chart: string, values: any, config: HelmChartOpts): Promise<Resource[]> {
     config = _.merge({
       namespace: this.namespace,
