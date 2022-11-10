@@ -4,21 +4,8 @@ import stringify from 'fast-safe-stringify';
 import { loadAll } from 'js-yaml';
 
 import { KubeExtension } from '../extension';
-import { Resource } from '../resource';
+import { isResource, Resource } from '../resource';
 import { GVK } from '../types';
-
-interface UnkResource extends Resource {
-  [key: string]: unknown;
-};
-
-function isResource(value: Record<string, unknown>): value is UnkResource {
-  return (
-    typeof value.apiVersion === 'string' &&
-        !!value.apiVersion &&
-        typeof value.kind === 'string' &&
-        !!value.kind
-  );
-};
 
 //export interface ManifestLoadOptions {};
 

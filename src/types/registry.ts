@@ -65,6 +65,7 @@ export class TypeRegistry {
     let mod: any;
     let path: string | null = null;
 
+    // TODO: handle exceptions to this rule, like snapshot.storage.k8s.io
     if (gvk.group && gvk.group.includes('.') && !gvk.group.endsWith('.k8s.io')) {
       // CRD, try everything till we find a match
       for (const crdPath of this.crdModulePaths) {

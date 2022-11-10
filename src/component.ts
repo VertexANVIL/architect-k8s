@@ -6,12 +6,13 @@ import { CNICapability, DNSCapability } from './capabilities';
 import { ClusterFact, ClusterSpec } from './cluster';
 import { KubeExtension } from './extension';
 import { Helm, HelmChartOpts } from './helm';
-import { Resource } from './resource';
-import { defaultNamespace, fixupResource } from './utils';
+import { Kustomize, KustomizeOpts } from './kustomize';
+import { Resource, ResourceTree } from './resource';
+import { defaultNamespace, fixupResource, normaliseResources } from './utils';
 
-export abstract class KubeComponent extends Component {
-  constructor(target: Target) {
-    super(target);
+export abstract class KubeComponent<TArgs = any> extends Component<TArgs> {
+  constructor(target: Target, name?: string, args?: TArgs) {
+    super(target, name, args);
 
     if (!this.extension) {
       throw Error('The Kubernetes extension must be registered against the current Target before components may be created.');
@@ -40,17 +41,19 @@ export abstract class KubeComponent extends Component {
     return 'default';
   }
 
-  public abstract build(): Promise<Resource[]>
+  public abstract build(): Promise<ResourceTree>
 
-  public postBuild(data: Resource[]) {
+  public postBuild(data: ResourceTree) {
+    let resources = normaliseResources(data);
+
     // apply the default namespace to all our objects
-    data = data.map(obj => {
+    resources = resources.map(obj => {
       obj = defaultNamespace(obj, this.namespace);
       obj = fixupResource(obj);
       return obj;
     });
 
-    return super.postBuild(data);
+    return super.postBuild(resources);
   }
 
   protected get cluster(): ClusterSpec {
@@ -66,6 +69,10 @@ export abstract class KubeComponent extends Component {
     return this.extension.helm;
   };
 
+  protected get kustomize(): Kustomize {
+    return this.extension.kustomize;
+  };
+
   /**
    * Wrapper for Helm.template that inserts our default namespace and configuration
    */
@@ -77,5 +84,12 @@ export abstract class KubeComponent extends Component {
     }, config);
 
     return this.helm.template(chart, values, config);
+  };
+
+  /**
+   * Wrapper for Kustomize.build
+   */
+  protected async kustomizeBuild(dir: string, config: KustomizeOpts = {}): Promise<Resource[]> {
+    return this.kustomize.build(dir, config);
   };
 };

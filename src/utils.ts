@@ -1,7 +1,7 @@
 import { IObjectMeta } from '@kubernetes-models/apimachinery/apis/meta/v1/ObjectMeta';
 import _ from 'lodash';
 
-import { Resource } from './resource';
+import { isResource, Resource, ResourceTree } from './resource';
 
 /**
  * Non-exhaustive blacklist of Kubernetes resources that may not have attached namespaces
@@ -22,6 +22,23 @@ const namespaceBlacklist: string[] = [
   'ServerBinding', 'ClusterPolicy', 'ClusterReportChangeRequest', 'Environment', 'ServerClass', 'Server',
   'NetworkAddonsConfig', 'ClusterPolicyReport',
 ];
+
+/**
+ * Normalises a recursive list or set of potential resources into a flat list of resources.
+ */
+export function normaliseResources(value: ResourceTree): Resource[] {
+  let result: Resource[];
+
+  if (Array.isArray(value)) {
+    result = value.map(v => normaliseResources(v)).flat();
+  } else if (isResource(value)) {
+    result = [value];
+  } else {
+    result = normaliseResources(Object.values(value));
+  };
+
+  return result;
+};
 
 /**
  * Runs fixup actions on API objects

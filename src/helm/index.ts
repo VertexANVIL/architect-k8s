@@ -107,8 +107,8 @@ export class Helm {
   };
 
   /**
-     * Renders a Helm chart from parameters
-     */
+   * Renders a Helm chart from parameters
+   */
   public async template(chart: string, values: any, config: HelmChartOpts): Promise<Resource[]> {
     const params: string[] = [];
 
@@ -155,102 +155,102 @@ export class Helm {
 
 export interface HelmChartOpts {
   /**
-     * Kubernetes api versions used for Capabilities.APIVersions
-     */
+   * Kubernetes api versions used for Capabilities.APIVersions
+   */
   apiVersions?: string[];
 
   /**
-     * verify certificates of HTTPS-enabled servers using this CA bundle
-     */
+   * verify certificates of HTTPS-enabled servers using this CA bundle
+   */
   caFile?: string;
 
   /**
-     * identify HTTPS client using this SSL certificate file
-     */
+   * identify HTTPS client using this SSL certificate file
+   */
   certFile?: string;
 
   /**
-     * include CRDs in the templated output
-     */
+   * include CRDs in the templated output
+   */
   includeCRDs?: boolean;
 
   /**
-     * skip tls certificate checks for the chart download
-     */
+   * skip tls certificate checks for the chart download
+   */
   insecureSkipTLSVerify?: boolean;
 
   /**
-     * set .Release.IsUpgrade instead of .Release.IsInstall
-     */
+   * set .Release.IsUpgrade instead of .Release.IsInstall
+   */
   isUpgrade?: boolean;
 
   /**
-     * identify HTTPS client using this SSL key file
-     */
+   * identify HTTPS client using this SSL key file
+   */
   keyFile?: string;
 
   /**
-     * location of public keys used for verification
-     */
+   * location of public keys used for verification
+   */
   keyring?: string;
 
   /**
-     * Kubernetes version used for Capabilities.KubeVersion
-     */
+   * Kubernetes version used for Capabilities.KubeVersion
+   */
   kubeVersion?: string;
 
   /**
-     * prevent hooks from running during install
-     */
+   * prevent hooks from running during install
+   */
   noHooks?: boolean;
 
   /**
-     * pass credentials to all domains
-     */
+   * pass credentials to all domains
+   */
   passCredentials?: boolean;
 
   /**
-     * chart repository password where to locate the requested chart
-     */
+   * chart repository password where to locate the requested chart
+   */
   password?: string;
 
   /**
-     * if set, render subchart notes along with the parent
-     */
+   * if set, render subchart notes along with the parent
+   */
   renderSubchartNotes?: boolean;
 
   /**
-     * chart repository url where to locate the requested chart
-     */
+   * chart repository url where to locate the requested chart
+   */
   repo: string;
 
   /**
-     * if set, no CRDs will be installed. By default, CRDs are installed if not already present
-     */
+   * if set, no CRDs will be installed. By default, CRDs are installed if not already present
+   */
   skipCrds?: boolean;
 
   /**
-     * skip tests from templated output
-     */
+   * skip tests from templated output
+   */
   skipTests?: boolean;
 
   /**
-     * chart repository username where to locate the requested chart
-     */
+   * chart repository username where to locate the requested chart
+   */
   username?: string;
 
   /**
-     * specify a version constraint for the chart version to use. This constraint can be a specific tag (e.g. 1.1.1) or it may reference a valid range (e.g. ^2.0.0). If this is not specified, the latest version is used
-     */
+   * specify a version constraint for the chart version to use. This constraint can be a specific tag (e.g. 1.1.1) or it may reference a valid range (e.g. ^2.0.0). If this is not specified, the latest version is used
+   */
   version: string;
 
   /**
-     * namespace scope for this request
-     */
+   * namespace scope for this request
+   */
   namespace?: string;
 
   /**
-     * release name override for the chart
-     */
+   * release name override for the chart
+   */
   releaseName?: string;
 }

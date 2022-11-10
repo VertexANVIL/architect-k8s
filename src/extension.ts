@@ -3,11 +3,12 @@ import { Target } from '@akim/architect/src';
 import * as api from 'kubernetes-models';
 
 import { ClusterFact, ClusterSpec } from './cluster';
+import { CrdsComponent } from './components/crds';
 import { Helm } from './helm';
+import { Kustomize } from './kustomize';
 import { Resource } from './resource';
 import { TypeRegistry } from './types/registry';
 import { ManifestLoader } from './yaml/load';
-import { CrdsComponent } from './components/crds';
 
 /**
  * Architect extension for Kubernetes.
@@ -23,6 +24,7 @@ export class KubeExtension {
   public loader: ManifestLoader;
 
   public helm: Helm;
+  public kustomize: Kustomize;
 
   constructor(target: Target, fact: ClusterFact) {
     this.target = target;
@@ -36,6 +38,7 @@ export class KubeExtension {
     this.loader = new ManifestLoader(this);
 
     this.helm = new Helm(this);
+    this.kustomize = new Kustomize(this);
     this.createDefaultResources();
 
     // register the CRD module
