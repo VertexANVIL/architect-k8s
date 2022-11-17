@@ -21,6 +21,7 @@ interface ClusterMetalSpec {
   nodes?: number;
 };
 
+// TODO: potentially move the Client and Metal specs to their own Fact, for separation purposes
 export interface ClusterSpec {
   name: string;
   client: ClusterClientSpec;
@@ -34,7 +35,7 @@ export interface ClusterSpec {
 @Reflect.metadata('uuid', '6adbc9ab-fecc-4578-aede-1c61268bf13d')
 export class ClusterFact extends BaseFact<ClusterSpec> {
   constructor(instance: ClusterSpec) {
-    const defaults = {
+    const defaults: Partial<ClusterSpec> = {
       ns: {
         features: 'infra-system',
         operators: 'operator-system',

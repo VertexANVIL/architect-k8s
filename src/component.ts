@@ -10,9 +10,9 @@ import { Kustomize, KustomizeOpts } from './kustomize';
 import { Resource, ResourceTree } from './resource';
 import { defaultNamespace, fixupResource, normaliseResources } from './utils';
 
-export abstract class KubeComponent<TArgs = any> extends Component<TArgs> {
-  constructor(target: Target, name?: string, args?: TArgs) {
-    super(target, name, args);
+export abstract class KubeComponent<TArgs extends object = any> extends Component<TArgs> {
+  constructor(target: Target, name?: string, props?: TArgs) {
+    super(target, name, props);
 
     if (!this.extension) {
       throw Error('The Kubernetes extension must be registered against the current Target before components may be created.');
