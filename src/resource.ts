@@ -31,7 +31,7 @@ export type ResourceConstructor = new (data: Resource) => Resource;
 /**
  * Represents a recursive set or map of resources
  */
-export type ResourceTree = any[] | Record<string, any>;
+export type ResourceTree = Resource | Resource[] | Record<string, Resource>;
 
 /**
  * Returns whether this anonymous value is a resource

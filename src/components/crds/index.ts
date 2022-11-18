@@ -11,6 +11,7 @@ import { KubeComponent } from '../../component';
 import { Resource } from '../../resource';
 
 
+@Reflect.metadata('name', 'crds')
 @Reflect.metadata('uuid', 'bdd8311b-bd6e-4e49-ad8f-eb2b943883dc')
 export class CrdsComponent extends KubeComponent {
   private readonly module: string;

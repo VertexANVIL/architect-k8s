@@ -76,14 +76,19 @@ export abstract class KubeComponent<TArgs extends object = any> extends Componen
   /**
    * Wrapper for Helm.template that inserts our default namespace and configuration
    */
-  protected async helmTemplate(chart: string, values: any, config: HelmChartOpts): Promise<Resource[]> {
+  protected async helmTemplate(chart: string, values: any, config: HelmChartOpts, filter?: (v: Resource) => boolean): Promise<Resource[]> {
     config = _.merge({
       namespace: this.namespace,
       kubeVersion: this.cluster.version,
+      noHooks: true,
+      skipCrds: true,
       skipTests: true,
     }, config);
 
-    return this.helm.template(chart, values, config);
+    let result = await this.helm.template(chart, values, config);
+    if (filter !== undefined) result = result.filter(filter);
+
+    return result;
   };
 
   /**

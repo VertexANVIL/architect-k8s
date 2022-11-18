@@ -1,5 +1,6 @@
 import 'reflect-metadata';
 import { Target } from '@akim/architect/src';
+import { TargetResolveParams } from '@akim/architect/src/target';
 import * as api from 'kubernetes-models';
 
 import { ClusterFact, ClusterSpec } from './cluster';
@@ -75,8 +76,8 @@ export class KubeExtension {
   /**
    * Extension of Target.resolve() which validates Kubernetes resources
    */
-  public async resolve(): Promise<Resource[]> {
-    return await this.target.resolve() as Resource[];
+  public async resolve(params?: TargetResolveParams): Promise<Resource[]> {
+    return await this.target.resolve(params) as Resource[];
   };
 
   public get cluster(): ClusterSpec {

@@ -70,7 +70,7 @@ export class Kustomize {
     this.buildParams(config, params);
 
     const execFileAsync = util.promisify(execFile);
-    const buf = await execFileAsync('kustomize', params);
+    const buf = await execFileAsync('kustomize', params, { maxBuffer: undefined });
     const resources = await this.exn.loader.loadString(buf.stdout);
     return resources;
   };

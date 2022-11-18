@@ -138,7 +138,7 @@ export class Helm {
       await fs.writeFile(valuesFile, YAML.stringify(values));
       const execFileAsync = util.promisify(execFile);
 
-      const buf = await execFileAsync('helm', params.concat('--values', valuesFile));
+      const buf = await execFileAsync('helm', params.concat('--values', valuesFile), { maxBuffer: undefined });
       const resources = await this.exn.loader.loadString(buf.stdout);
 
       // cache the result from the inputs

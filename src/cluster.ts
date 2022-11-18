@@ -7,8 +7,19 @@ interface ClusterClientSpec {
 };
 
 interface ClusterNamespaceSpec {
+  /**
+   * The default namespace defined for cluster infrastructure
+   */
   features?: string;
+
+  /**
+   * The default namespace defined for cluster operators
+   */
   operators?: string;
+
+  /**
+   * The default namespace defined for cluster services
+   */
   services?: string;
 };
 
