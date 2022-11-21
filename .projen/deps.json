@@ -30,6 +30,10 @@
       "type": "build"
     },
     {
+      "name": "@types/yargs",
+      "type": "build"
+    },
+    {
       "name": "@typescript-eslint/eslint-plugin",
       "version": "^5",
       "type": "build"
@@ -103,10 +107,6 @@
       "type": "runtime"
     },
     {
-      "name": "@kosko/require",
-      "type": "runtime"
-    },
-    {
       "name": "@kubernetes-models/apimachinery",
       "type": "runtime"
     },
@@ -147,7 +147,7 @@
       "type": "runtime"
     },
     {
-      "name": "yaml",
+      "name": "yargs",
       "type": "runtime"
     }
   ],

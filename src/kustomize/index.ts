@@ -1,14 +1,14 @@
 import { execFile } from 'node:child_process';
 import * as util from 'util';
 
-import { KubeExtension } from '../extension';
 import { Resource } from '../resource';
+import { KubeTarget } from '../target';
 
 export class Kustomize {
-  private readonly exn: KubeExtension;
+  private readonly target: KubeTarget;
 
-  constructor(exn: KubeExtension) {
-    this.exn = exn;
+  constructor(target: KubeTarget) {
+    this.target = target;
   };
 
   private buildParams(config: KustomizeOpts, params: string[]) {
@@ -71,7 +71,7 @@ export class Kustomize {
 
     const execFileAsync = util.promisify(execFile);
     const buf = await execFileAsync('kustomize', params, { maxBuffer: undefined });
-    const resources = await this.exn.loader.loadString(buf.stdout);
+    const resources = await this.target.loader.loadString(buf.stdout);
     return resources;
   };
 };

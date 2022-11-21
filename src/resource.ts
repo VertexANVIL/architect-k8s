@@ -44,3 +44,17 @@ export function isResource(value: Record<string, unknown>): value is UnkResource
         !!value.kind
   );
 };
+
+/**
+ * Returns the cluster-unique resource identifier of the specified resource
+ */
+export function resourceId(data: Resource): string {
+  const builder: string[] = [];
+  const components = [data.apiVersion, data.kind, data.metadata?.namespace, data.metadata?.name!];
+  components.forEach(c => {
+    if (c === undefined || c === null) return;
+    builder.push(c.toLowerCase().replace('/', '_'));
+  });
+
+  return builder.join('.');
+};

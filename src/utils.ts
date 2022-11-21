@@ -47,9 +47,9 @@ export function fixupResource(resource: Resource): Resource {
   const metadata: IObjectMeta = {};
 
   // appends our identifier label
-  metadata.labels = {
-    'fractal.k8s.arctarus.net/defined': 'true',
-  };
+  // metadata.labels = {
+  //   'fractal.k8s.arctarus.net/defined': 'true',
+  // };
 
   // disables pruning on CRDs and PVCs (CRITICAL to not break stuff when Kustomizations are deleted)
   // TODO: only append this when FluxCD is actually being used
@@ -62,6 +62,15 @@ export function fixupResource(resource: Resource): Resource {
   };
 
   resource = _.merge(resource, { metadata: metadata });
+
+  // removes null annotations/labels
+  if (resource.metadata?.annotations !== undefined && resource.metadata.annotations === null) {
+    delete resource.metadata.annotations;
+  };
+
+  if (resource.metadata?.labels !== undefined && resource.metadata.labels === null) {
+    delete resource.metadata.labels;
+  };
 
   // removes null creationTimestamp (works around problem with some specific crds)
   if (resource.metadata?.creationTimestamp !== undefined && resource.metadata?.creationTimestamp === null) {
@@ -100,4 +109,12 @@ export function defaultNamespace(resource: Resource, def: string): Resource {
   };
 
   return resource;
+};
+
+interface Validator {
+  validate(): void | Promise<void>;
+};
+
+export function isValidator(value: unknown): value is Validator {
+  return !!value && typeof (value as any).validate === 'function';
 };

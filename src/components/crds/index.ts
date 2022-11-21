@@ -2,13 +2,13 @@ import 'ts-node';
 import 'reflect-metadata';
 import path from 'path';
 import { notEmpty, Target } from '@akim/architect/src';
-import { importPath } from '@kosko/require';
 import * as fg from 'fast-glob';
 import * as api from 'kubernetes-models';
 // eslint-disable-next-line no-duplicate-imports
 import { REGISTER_INSTANCE } from 'ts-node';
 import { KubeComponent } from '../../component';
 import { Resource } from '../../resource';
+import { KubeTarget } from '../../target';
 
 
 @Reflect.metadata('name', 'crds')
@@ -24,9 +24,9 @@ export class CrdsComponent extends KubeComponent {
   public async build(): Promise<Resource[]> {
     let mod: any;
     if (process[REGISTER_INSTANCE]) {
-      mod = await importPath(`${this.module}/src/index.ts`);
+      mod = await import(`${this.module}/src/index.ts`);
     } else {
-      mod = await importPath(`${this.module}/lib/index.js`);
+      mod = await import(`${this.module}/lib/index.js`);
     };
 
     if (!mod || !mod.dir) {
@@ -37,7 +37,7 @@ export class CrdsComponent extends KubeComponent {
     const files = await fg.default([`${dir}/**/*.yaml`], {});
     const crds: (api.apiextensionsK8sIo.v1.CustomResourceDefinition | null)[] = await Promise.all(files.map(
       async (file): Promise<api.apiextensionsK8sIo.v1.CustomResourceDefinition | null> => {
-        const resources = await this.extension.loader.loadFile(file);
+        const resources = await (this.target as KubeTarget).loader.loadFile(file);
         if (resources.length <= 0) return null;
 
         // this will always be a CRD as our loadFile method loads the model

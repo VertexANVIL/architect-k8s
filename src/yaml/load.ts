@@ -3,17 +3,17 @@ import { isRecord } from '@akim/architect/src';
 import stringify from 'fast-safe-stringify';
 import { loadAll } from 'js-yaml';
 
-import { KubeExtension } from '../extension';
 import { isResource, Resource } from '../resource';
+import { KubeTarget } from '../target';
 import { GVK } from '../types';
 
 //export interface ManifestLoadOptions {};
 
 export class ManifestLoader {
-  private readonly exn: KubeExtension;
+  private readonly target: KubeTarget;
 
-  constructor(exn: KubeExtension) {
-    this.exn = exn;
+  constructor(target: KubeTarget) {
+    this.target = target;
   };
 
   public async loadString(
@@ -33,7 +33,7 @@ export class ManifestLoader {
       };
 
       const gvk = GVK.fromResource(object.apiVersion, object.kind);
-      const Constructor = await this.exn.types.getConstructor(gvk);
+      const Constructor = await this.target.types.getConstructor(gvk);
       const resource = Constructor ? new Constructor(object) : object;
       if (!resource) continue;
 

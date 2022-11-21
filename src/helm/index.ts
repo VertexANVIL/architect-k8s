@@ -4,16 +4,16 @@ import * as os from 'os';
 import * as path from 'path';
 import * as util from 'util';
 import { cache, compositeHash } from '@akim/architect/src';
-import * as YAML from 'yaml';
+import * as yaml from 'js-yaml';
 
-import { KubeExtension } from '../extension';
 import { Resource } from '../resource';
+import { KubeTarget } from '../target';
 
 export class Helm {
-  private readonly exn: KubeExtension;
+  private readonly target: KubeTarget;
 
-  constructor(exn: KubeExtension) {
-    this.exn = exn;
+  constructor(target: KubeTarget) {
+    this.target = target;
   };
 
   private buildParams(config: HelmChartOpts, params: string[]) {
@@ -97,7 +97,7 @@ export class Helm {
 
     const decoder = new util.TextDecoder();
     const data = decoder.decode(bytes);
-    return this.exn.loader.loadString(data);
+    return this.target.loader.loadString(data);
   };
 
   private async storeCache(hash: string, data: string) {
@@ -135,11 +135,11 @@ export class Helm {
     const valuesFile = path.join(dir, 'values.yaml');
 
     try {
-      await fs.writeFile(valuesFile, YAML.stringify(values));
+      await fs.writeFile(valuesFile, yaml.dump(values));
       const execFileAsync = util.promisify(execFile);
 
       const buf = await execFileAsync('helm', params.concat('--values', valuesFile), { maxBuffer: undefined });
-      const resources = await this.exn.loader.loadString(buf.stdout);
+      const resources = await this.target.loader.loadString(buf.stdout);
 
       // cache the result from the inputs
       await this.storeCache(hash, buf.stdout);

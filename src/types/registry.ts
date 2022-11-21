@@ -1,5 +1,4 @@
 import 'ts-node';
-import { importPath } from '@kosko/require';
 // eslint-disable-next-line no-duplicate-imports
 import { REGISTER_INSTANCE } from 'ts-node';
 import { ResourceConstructor } from '../resource';
@@ -15,9 +14,9 @@ function gvkToPath(gvk: GVK): string {
   return path;
 };
 
-function tryImport(path: string): any {
+async function tryImport(path: string): Promise<any> {
   try {
-    return importPath(path);
+    return await import(path);
   } catch {
     return;
   };
