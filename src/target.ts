@@ -78,15 +78,35 @@ export class KubeTarget extends Target {
   };
 
   private validateCRDRequirements(requirements: KubeCRDRequirements) {
+    // build a list of all unique GVKs in the cluster
+    const allGVKs: GVK[] = [];
+    Object.values(requirements).forEach(v => {
+      v.exports.forEach(gvk => {
+        if (allGVKs.findIndex(g => g.compare(gvk)) > -1) return;
+        allGVKs.push(gvk);
+      });
+    });
+
+    // validate all exports and requirements
     Object.entries(requirements).forEach(([k, v]) => {
+      // validate export uniqueness
       Object.entries(requirements).forEach(([k2, v2]) => {
         if (k === k2) return;
         const both = v.exports.filter(r => v2.exports.includes(r));
         if (both.length <= 0) return;
 
-        const str = both.join(', ');
-        throw Error(`both components ${k} and ${k2} export CRDs for resources ${str}`);
+        throw Error(`both components ${k} and ${k2} export CRDs for resources ${both.join(', ')}`);
       });
+
+      // validate requirement validity
+      const missing = v.requirements.filter(r => {
+        if (r.isAPIModel()) return false;
+        return allGVKs.findIndex(g => g.compare(r)) <= -1;
+      });
+
+      if (missing.length > 0) {
+        throw Error(`component ${k} is attempting to use the resources missing from the cluster: ${missing.join(', ')}`);
+      };
     });
   };
 
