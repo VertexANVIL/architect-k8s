@@ -24,6 +24,7 @@ const project = new typescript.TypeScriptProject({
     'fast-safe-stringify',
     'js-yaml',
     'ts-node',
+    'wildcard-match',
     'yargs',
     '@kubernetes-models/apimachinery',
     '@akim/architect@link:../architect',

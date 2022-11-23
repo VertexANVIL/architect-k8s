@@ -68,10 +68,10 @@ export abstract class KubeComponent<TArgs extends object = any> extends Componen
     config = _.merge({
       namespace: this.namespace,
       kubeVersion: this.cluster.version,
+      includeCRDs: true,
       noHooks: true,
-      skipCrds: true,
       skipTests: true,
-    }, config);
+    } as Partial<HelmChartOpts>, config);
 
     let result = await this.helm.template(chart, values, config);
     if (filter !== undefined) result = result.filter(filter);

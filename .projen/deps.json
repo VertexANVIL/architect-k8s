@@ -147,6 +147,10 @@
       "type": "runtime"
     },
     {
+      "name": "wildcard-match",
+      "type": "runtime"
+    },
+    {
       "name": "yargs",
       "type": "runtime"
     }

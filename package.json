@@ -64,6 +64,7 @@
     "semver": "^7.3.8",
     "ts-node": "^10.9.1",
     "uuid": "^9.0.0",
+    "wildcard-match": "*",
     "yargs": "^17.6.2"
   },
   "main": "lib/index.js",

@@ -31,6 +31,9 @@ export class KubeTarget extends Target {
   public helm: Helm;
   public kustomize: Kustomize;
 
+  private readonly markedCRDGVKs: GVK[] = [];
+  private readonly markedCRDGroups: string[] = [];
+
   constructor(spec: ClusterSpec) {
     super();
 
@@ -64,6 +67,28 @@ export class KubeTarget extends Target {
   };
 
   /**
+   * Installs the CRD specified by the GVK, or just marks it as installed.
+   * @param gvk The GVK to install the CRD by
+   * @param mark Just mark the CRD as present in the cluster, and don't install it
+   */
+  public enableCRD(gvk: GVK, mark: boolean = false) {
+    this.components.request(CrdsComponent).enableGVK(gvk);
+    if (mark) this.markedCRDGVKs.push(gvk); // TODO: FIX unique, actually use mark parameter
+  };
+
+  /**
+   * Installs the CRDs specified by the group, or just marks them as installed.
+   * @param group The group(s) of CRDs to install from the shared repository
+   * @param subgroups Whether to add a wildcard rule to match subgroups
+   * @param mark Just mark the CRDs as present in the cluster, and don't install them
+   */
+  public enableCRDGroup(group: string, subgroups: boolean = true, mark: boolean = false) {
+    this.components.request(CrdsComponent).enableGroup(group);
+    if (mark) this.markedCRDGroups.push(group); // TODO: FIX unique, actually use mark parameter
+    if (subgroups) this.enableCRDGroup(`*.${group}`, mark, subgroups);
+  };
+
+  /**
    * Creates a new namespace and returns it
    */
   public createNamespace(name: string): api.v1.Namespace {
@@ -92,7 +117,7 @@ export class KubeTarget extends Target {
       // validate export uniqueness
       Object.entries(requirements).forEach(([k2, v2]) => {
         if (k === k2) return;
-        const both = v.exports.filter(r => v2.exports.includes(r));
+        const both = v.exports.filter(r => v2.exports.findIndex(g => r.compare(g)) > -1);
         if (both.length <= 0) return;
 
         throw Error(`both components ${k} and ${k2} export CRDs for resources ${both.join(', ')}`);
@@ -105,7 +130,7 @@ export class KubeTarget extends Target {
       });
 
       if (missing.length > 0) {
-        throw Error(`component ${k} is attempting to use the resources missing from the cluster: ${missing.join(', ')}`);
+        throw Error(`component ${k} is attempting to use resources missing from the cluster: ${missing.join(', ')}`);
       };
     });
   };
