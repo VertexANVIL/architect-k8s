@@ -32,7 +32,7 @@ export class ManifestLoader {
         throw new Error(`The value is not a Kubernetes API resource (apiVersion and kind required): ${stringify(object)}`);
       };
 
-      const gvk = GVK.fromResource(object.apiVersion, object.kind);
+      const gvk = GVK.fromAK(object.apiVersion, object.kind);
       const Constructor = await this.target.types.getConstructor(gvk);
       const resource = Constructor ? new Constructor(object) : object;
       if (!resource) continue;

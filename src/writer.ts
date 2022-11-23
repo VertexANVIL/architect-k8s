@@ -12,7 +12,7 @@ export class KubeWriter implements Writer {
       await fs.rm(rd, { recursive: true, force: true });
       await fs.mkdir(rd, { recursive: true });
 
-      const resources = v as Resource[];
+      const resources = v.result as Resource[];
       await Promise.all(resources.map(async r => {
         const name = `${resourceId(r)}.yaml`;
         const resource = yaml.dump(r);

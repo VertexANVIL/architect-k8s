@@ -6,7 +6,7 @@ import { CNICapability, DNSCapability } from './capabilities';
 import { ClusterFact, ClusterSpec } from './fact';
 import { Helm, HelmChartOpts } from './helm';
 import { Kustomize, KustomizeOpts } from './kustomize';
-import { Resource, ResourceTree } from './resource';
+import { Resource } from './resource';
 import { KubeTarget } from './target';
 import { defaultNamespace, fixupResource, normaliseResources } from './utils';
 
@@ -31,11 +31,11 @@ export abstract class KubeComponent<TArgs extends object = any> extends Componen
    */
   public get namespace(): string {
     return 'default';
-  }
+  };
 
-  public abstract build(): Promise<ResourceTree>
+  public abstract build(): Promise<any>;
 
-  public postBuild(data: ResourceTree) {
+  public postBuild(data: any) {
     let resources = normaliseResources(data);
 
     // apply the default namespace to all our objects
@@ -46,7 +46,7 @@ export abstract class KubeComponent<TArgs extends object = any> extends Componen
     });
 
     return super.postBuild(resources);
-  }
+  };
 
   protected get cluster(): ClusterSpec {
     return this.target.fact(ClusterFact).instance;
@@ -102,5 +102,9 @@ export class KubeResourceComponent extends KubeComponent {
 
   public push(...items: Resource[]) {
     this.resources.push(...items);
+  };
+
+  public get requirements(): IComponentMatcher[] {
+    return [];
   };
 };

@@ -1,4 +1,4 @@
-import { Result } from '@akim/architect/src';
+import { Component, Result } from '@akim/architect/src';
 import { Target, TargetResolveParams } from '@akim/architect/src/target';
 import * as api from 'kubernetes-models';
 import { KubeResourceComponent } from './component';
@@ -6,10 +6,18 @@ import { CrdsComponent } from './components';
 import { ClusterFact, ClusterSpec } from './fact';
 import { Helm } from './helm';
 import { Kustomize } from './kustomize';
-import { TypeRegistry } from './types';
+import { Resource } from './resource';
+import { GVK, TypeRegistry } from './types';
 import { isValidator } from './utils';
 import { KubeWriter } from './writer';
 import { ManifestLoader } from './yaml/load';
+
+export interface KubeCRDRequirement {
+  exports: GVK[];
+  requirements: GVK[];
+};
+
+export type KubeCRDRequirements = Record<string, KubeCRDRequirement>;
 
 export interface KubeTargetResolveParams extends TargetResolveParams {};
 
@@ -69,8 +77,89 @@ export class KubeTarget extends Target {
     return namespace;
   };
 
+  private validateCRDRequirements(requirements: KubeCRDRequirements) {
+    Object.entries(requirements).forEach(([k, v]) => {
+      Object.entries(requirements).forEach(([k2, v2]) => {
+        if (k === k2) return;
+        const both = v.exports.filter(r => v2.exports.includes(r));
+        if (both.length <= 0) return;
+
+        const str = both.join(', ');
+        throw Error(`both components ${k} and ${k2} export CRDs for resources ${str}`);
+      });
+    });
+  };
+
+  /**
+   * Extracts and returns the GVKs each component exports (by virtue of declaring CRDs)
+   * plus the GVKs declared as resources by each component, in order to establish dependencies
+   */
+  private buildCRDRequirements(result: Result): KubeCRDRequirements {
+    function transformCRDs(resources: Resource[]): GVK[] {
+      const gvks: GVK[] = [];
+      resources.forEach(r => {
+        if (r.kind !== 'CustomResourceDefinition') return;
+        const crd = r as api.apiextensionsK8sIo.v1.CustomResourceDefinition;
+        gvks.push(...GVK.fromCRD(crd));
+      });
+
+      return gvks;
+    };
+
+    const obj = Object.fromEntries(Object.entries(result.components).map(([k, v]): [string, KubeCRDRequirement] => {
+      const resources = v.result as Resource[];
+      const requirement: KubeCRDRequirement = {
+        exports: transformCRDs(resources),
+        requirements: GVK.uniqueGVKs(resources),
+      };
+
+      return [k, requirement];
+    }));
+
+    return obj;
+  };
+
+  private processDependencies(result: Result) {
+    // check to see what CRDs each component exports
+    // validate objects - no two components can export the same GVK
+    const crds = this.buildCRDRequirements(result);
+    this.validateCRDRequirements(crds);
+
+    // append interdependencies
+    Object.entries(crds).forEach(([k, v]) => {
+      // find the components that export the CRDs that this one needs
+      const dependencies: Component[] = v.requirements.reduce((prev, cur) => {
+        let name: string | undefined = undefined;
+        for (const [k2, v2] of Object.entries(crds)) {
+          const found = v2.exports.filter(e => cur.compare(e));
+          if (found.length <= 0) {
+            continue;
+          } else {
+            name = k2;
+            break;
+          };
+        };
+
+        if (name === undefined) return prev;
+        const component = result.components[name].component;
+        if (prev.indexOf(component) !== -1) return prev;
+
+        return prev.concat(component);
+      }, [] as Component[]);
+
+      const component = result.components[k];
+      dependencies.forEach(d => {
+        if (component.dependencies.indexOf(d) !== -1) return;
+        component.dependencies.push(d);
+      });
+    });
+  };
+
   public async resolve(params: KubeTargetResolveParams = {}): Promise<Result> {
     const result = await super.resolve(params) as Result;
+
+    // process dependencies - introspect for hidden component-component dependencies involving CRDs
+    this.processDependencies(result);
 
     if (params.validate !== false) {
       for (const item of result.all) {

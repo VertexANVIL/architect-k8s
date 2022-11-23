@@ -9,5 +9,5 @@ export interface DNSCapabilitySpec {
   flavor: string | DNSFlavor;
 };
 
-@Reflect.metadata('uuid', '97167668-f7bf-486a-bcda-f4780ea5586b')
+@Reflect.metadata('uuid', '3d47a639-ffb6-4ed8-b580-3b4adf662181')
 export class DNSCapability extends Capability<DNSCapabilitySpec> {};

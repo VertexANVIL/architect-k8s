@@ -27,8 +27,9 @@ const namespaceBlacklist: string[] = [
  * Normalises a recursive list or set of potential resources into a flat list of resources.
  */
 export function normaliseResources(value: any): Resource[] {
-  let result: Resource[];
+  if (value === undefined || value === null) return [];
 
+  let result: Resource[];
   if (Array.isArray(value)) {
     result = value.map(v => normaliseResources(v)).flat();
   } else if (isResource(value)) {
