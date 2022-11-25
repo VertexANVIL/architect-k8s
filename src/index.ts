@@ -4,6 +4,6 @@ export { Kustomize } from './kustomize';
 export { GVK } from './types';
 export * from './capabilities';
 export { ClusterFact } from './fact';
-export { KubeComponent } from './component';
+export { KubeComponent, KubeComponentArgs } from './component';
 export { ResourceKind, Resource, ResourceTree } from './resource';
 export { KubeTarget, KubeTargetResolveParams } from './target';

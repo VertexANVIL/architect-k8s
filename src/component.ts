@@ -1,5 +1,4 @@
-import { CapabilityMatcher, Component, Target } from '@akim/architect/src';
-import { IComponentMatcher } from '@akim/architect/src/component';
+import { CapabilityMatcher, Component, ComponentArgs, ComponentMatcher, IComponentMatcher, Target } from '@akim/architect/src';
 import _ from 'lodash';
 import { CNICapability, DNSCapability } from './capabilities';
 
@@ -10,8 +9,17 @@ import { Resource } from './resource';
 import { KubeTarget } from './target';
 import { defaultNamespace, fixupResource, normaliseResources } from './utils';
 
-export abstract class KubeComponent<TArgs extends object = any> extends Component<TArgs> {
-  constructor(target: Target, name?: string, props?: TArgs) {
+export class KubeComponentArgs extends ComponentArgs {};
+
+export abstract class KubeComponent<TArgs extends KubeComponentArgs = KubeComponentArgs> extends Component<TArgs> {
+  declare protected readonly target: KubeTarget;
+
+  /**
+   * Whether to enable adding standard requirements such as CNI and DNS
+   */
+  protected standardRequirements = true;
+
+  constructor(target: Target, name?: string, props: TArgs = new KubeComponentArgs() as TArgs) {
     super(target, name, props);
   };
 
@@ -19,10 +27,14 @@ export abstract class KubeComponent<TArgs extends object = any> extends Componen
    * Returns the default set of requirements.
    */
   public get requirements(): IComponentMatcher[] {
-    return [
+    const def: IComponentMatcher[] = this.standardRequirements ? [
       new CapabilityMatcher(CNICapability),
       new CapabilityMatcher(DNSCapability),
-    ];
+    ] : [];
+
+    return def.concat([
+      new ComponentMatcher(KubePreludeComponent),
+    ]);
   };
 
   /**
@@ -32,8 +44,6 @@ export abstract class KubeComponent<TArgs extends object = any> extends Componen
   public get namespace(): string {
     return 'default';
   };
-
-  public abstract build(): Promise<any>;
 
   public postBuild(data: any) {
     let resources = normaliseResources(data);
@@ -54,11 +64,11 @@ export abstract class KubeComponent<TArgs extends object = any> extends Componen
 
   // helper accessors for extension fields
   protected get helm(): Helm {
-    return (this.target as KubeTarget).helm;
+    return this.target.helm;
   };
 
   protected get kustomize(): Kustomize {
-    return (this.target as KubeTarget).kustomize;
+    return this.target.kustomize;
   };
 
   /**
@@ -91,9 +101,9 @@ export class KubeResourceComponentOptions {
   resources: Resource[] = [];
 };
 
-@Reflect.metadata('name', 'resources')
+@Reflect.metadata('name', 'prelude')
 @Reflect.metadata('uuid', '526f5de2-73b3-40f9-a88d-6eac3bb014b8')
-export class KubeResourceComponent extends KubeComponent {
+export class KubePreludeComponent extends KubeComponent {
   private readonly resources: Resource[] = [];
 
   public async build(): Promise<Resource[]> {

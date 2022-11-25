@@ -49,7 +49,7 @@ export function fixupResource(resource: Resource): Resource {
 
   // appends our identifier label
   // metadata.labels = {
-  //   'fractal.k8s.arctarus.net/defined': 'true',
+  //   'k8s.ark.arctarus.net/defined': 'true',
   // };
 
   // disables pruning on CRDs and PVCs (CRITICAL to not break stuff when Kustomizations are deleted)

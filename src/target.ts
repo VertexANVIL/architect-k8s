@@ -1,7 +1,7 @@
-import { Component, Result } from '@akim/architect/src';
-import { Target, TargetResolveParams } from '@akim/architect/src/target';
+import { Component, Result, Target, TargetParams, TargetResolveParams } from '@akim/architect/src';
 import * as api from 'kubernetes-models';
-import { KubeResourceComponent } from './component';
+import { FluxCDController, FluxCDMode } from './apply/flux';
+import { KubePreludeComponent } from './component';
 import { CrdsComponent } from './components';
 import { ClusterFact, ClusterSpec } from './fact';
 import { Helm } from './helm';
@@ -19,23 +19,35 @@ export interface KubeCRDRequirement {
 
 export type KubeCRDRequirements = Record<string, KubeCRDRequirement>;
 
+export interface KubeTargetParams extends TargetParams {
+  modes: {
+    flux?: FluxCDMode;
+  };
+};
+
 export interface KubeTargetResolveParams extends TargetResolveParams {};
 
 /**
  * Version of {Target} that provides build constructs for a specific Kubernetes cluster.
  */
 export class KubeTarget extends Target {
+  declare public readonly params: KubeTargetParams;
+
   public types: TypeRegistry;
   public loader: ManifestLoader;
 
   public helm: Helm;
   public kustomize: Kustomize;
 
+  public flux: FluxCDController;
+
   private readonly markedCRDGVKs: GVK[] = [];
   private readonly markedCRDGroups: string[] = [];
 
-  constructor(spec: ClusterSpec) {
-    super();
+  constructor(spec: ClusterSpec, params: KubeTargetParams = {
+    modes: {},
+  }) {
+    super(params);
 
     // register our cluster fact
     this.facts.register(ClusterFact, new ClusterFact(spec));
@@ -46,7 +58,9 @@ export class KubeTarget extends Target {
     this.helm = new Helm(this);
     this.kustomize = new Kustomize(this);
 
-    this.components.register(KubeResourceComponent);
+    this.flux = new FluxCDController(this);
+
+    this.enable(KubePreludeComponent);
     this.createDefaultResources();
 
     // register the CRD module
@@ -72,7 +86,7 @@ export class KubeTarget extends Target {
    * @param mark Just mark the CRD as present in the cluster, and don't install it
    */
   public enableCRD(gvk: GVK, mark: boolean = false) {
-    this.components.request(CrdsComponent).enableGVK(gvk);
+    this.component(CrdsComponent).enableGVK(gvk);
     if (mark) this.markedCRDGVKs.push(gvk); // TODO: FIX unique, actually use mark parameter
   };
 
@@ -83,7 +97,7 @@ export class KubeTarget extends Target {
    * @param mark Just mark the CRDs as present in the cluster, and don't install them
    */
   public enableCRDGroup(group: string, subgroups: boolean = true, mark: boolean = false) {
-    this.components.request(CrdsComponent).enableGroup(group);
+    this.component(CrdsComponent).enableGroup(group);
     if (mark) this.markedCRDGroups.push(group); // TODO: FIX unique, actually use mark parameter
     if (subgroups) this.enableCRDGroup(`*.${group}`, mark, subgroups);
   };
@@ -98,7 +112,7 @@ export class KubeTarget extends Target {
       },
     });
 
-    this.resources.push(namespace);
+    this.prelude.push(namespace);
     return namespace;
   };
 
@@ -152,7 +166,7 @@ export class KubeTarget extends Target {
     };
 
     const obj = Object.fromEntries(Object.entries(result.components).map(([k, v]): [string, KubeCRDRequirement] => {
-      const resources = v.result as Resource[];
+      const resources = v.result as Resource[] ?? [];
       const requirement: KubeCRDRequirement = {
         exports: transformCRDs(resources),
         requirements: GVK.uniqueGVKs(resources),
@@ -219,7 +233,7 @@ export class KubeTarget extends Target {
     };
 
     // set the writer so we can output YAML
-    result.writer = new KubeWriter();
+    result.writer = new KubeWriter(this);
 
     return result;
   };
@@ -228,7 +242,7 @@ export class KubeTarget extends Target {
     return this.fact(ClusterFact).instance;
   };
 
-  private get resources(): KubeResourceComponent {
-    return this.component(KubeResourceComponent);
+  private get prelude(): KubePreludeComponent {
+    return this.component(KubePreludeComponent);
   };
 };

@@ -10,7 +10,6 @@ import { REGISTER_INSTANCE } from 'ts-node';
 import wcmatch from 'wildcard-match';
 import { KubeComponent } from '../../component';
 import { Resource } from '../../resource';
-import { KubeTarget } from '../../target';
 import { GVK } from '../../types';
 
 
@@ -25,6 +24,7 @@ export class CrdsComponent extends KubeComponent {
   constructor(target: Target, module: string) {
     super(target);
     this.module = module;
+    this.standardRequirements = false;
   };
 
   public async build(): Promise<Resource[]> {
@@ -47,7 +47,7 @@ export class CrdsComponent extends KubeComponent {
       const files = await fg.default([`${dir}/${group}/*.yaml`], {});
       const result: (api.apiextensionsK8sIo.v1.CustomResourceDefinition | null)[] = await Promise.all(files.map(
         async (file): Promise<api.apiextensionsK8sIo.v1.CustomResourceDefinition | null> => {
-          const resources = await (this.target as KubeTarget).loader.loadFile(file);
+          const resources = await this.target.loader.loadFile(file);
           if (resources.length <= 0) return null;
 
           // this will always be a CRD as our loadFile method loads the model
