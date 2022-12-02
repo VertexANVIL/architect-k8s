@@ -9,9 +9,16 @@ import { Resource } from './resource';
 import { KubeTarget } from './target';
 import { defaultNamespace, fixupResource, normaliseResources } from './utils';
 
-export class KubeComponentArgs extends ComponentArgs {};
+export interface KubeComponentArgs extends ComponentArgs {};
+export interface KubeComponentGenericResources {
+  result?: Resource[];
+};
 
-export abstract class KubeComponent<TArgs extends KubeComponentArgs = KubeComponentArgs> extends Component<TArgs> {
+export abstract class KubeComponent<
+  TResult extends object = KubeComponentGenericResources,
+  TArgs extends KubeComponentArgs = KubeComponentArgs,
+  TParent extends Component = any
+> extends Component<TResult, TArgs, TParent> {
   declare protected readonly target: KubeTarget;
 
   /**
@@ -19,8 +26,8 @@ export abstract class KubeComponent<TArgs extends KubeComponentArgs = KubeCompon
    */
   protected standardRequirements = true;
 
-  constructor(target: Target, name?: string, props: TArgs = new KubeComponentArgs() as TArgs) {
-    super(target, name, props);
+  constructor(target: Target, props: TArgs = {} as TArgs, name?: string, parent?: TParent) {
+    super(target, props, name, parent);
   };
 
   /**
@@ -45,12 +52,20 @@ export abstract class KubeComponent<TArgs extends KubeComponentArgs = KubeCompon
     return 'default';
   };
 
-  public postBuild(data: any) {
-    let resources = normaliseResources(data);
+  public async build(result?: TResult): Promise<TResult> {
+    result = await super.build(result);
 
-    // apply the default namespace to all our objects
+    // properly namespace resources, because postBuild doesn't run for children individually
+    const resources = normaliseResources(result);
+    resources.forEach(r => defaultNamespace(r, this.namespace));
+
+    return result;
+  };
+
+  public postBuild(data: any) {
+    // run post-build resource fixup at the top level
+    let resources = normaliseResources(data);
     resources = resources.map(obj => {
-      obj = defaultNamespace(obj, this.namespace);
       obj = fixupResource(obj);
       return obj;
     });
@@ -106,8 +121,9 @@ export class KubeResourceComponentOptions {
 export class KubePreludeComponent extends KubeComponent {
   private readonly resources: Resource[] = [];
 
-  public async build(): Promise<Resource[]> {
-    return this.resources;
+  public async build(resources: KubeComponentGenericResources = {}) {
+    resources.result = this.resources;
+    return super.build(resources);
   };
 
   public push(...items: Resource[]) {

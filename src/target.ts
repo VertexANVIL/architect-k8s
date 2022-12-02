@@ -1,5 +1,6 @@
 import { Component, Result, Target, TargetParams, TargetResolveParams } from '@akim/architect/src';
 import * as api from 'kubernetes-models';
+import wcmatch from 'wildcard-match';
 import { FluxCDController, FluxCDMode } from './apply/flux';
 import { KubePreludeComponent } from './component';
 import { CrdsComponent } from './components';
@@ -86,8 +87,11 @@ export class KubeTarget extends Target {
    * @param mark Just mark the CRD as present in the cluster, and don't install it
    */
   public enableCRD(gvk: GVK, mark: boolean = false) {
-    this.component(CrdsComponent).enableGVK(gvk);
-    if (mark) this.markedCRDGVKs.push(gvk); // TODO: FIX unique, actually use mark parameter
+    if (mark === true) {
+      this.markedCRDGVKs.push(gvk);
+    } else {
+      this.component(CrdsComponent).enableGVK(gvk);
+    };
   };
 
   /**
@@ -97,9 +101,13 @@ export class KubeTarget extends Target {
    * @param mark Just mark the CRDs as present in the cluster, and don't install them
    */
   public enableCRDGroup(group: string, subgroups: boolean = true, mark: boolean = false) {
-    this.component(CrdsComponent).enableGroup(group);
-    if (mark) this.markedCRDGroups.push(group); // TODO: FIX unique, actually use mark parameter
-    if (subgroups) this.enableCRDGroup(`*.${group}`, mark, subgroups);
+    if (mark === true) {
+      this.markedCRDGroups.push(group);
+    } else {
+      this.component(CrdsComponent).enableGroup(group);
+    };
+
+    if (subgroups) this.enableCRDGroup(`*.${group}`, false, mark);
   };
 
   /**
@@ -140,6 +148,9 @@ export class KubeTarget extends Target {
       // validate requirement validity
       const missing = v.requirements.filter(r => {
         if (r.isAPIModel()) return false;
+        if (this.markedCRDGroups.some(g => wcmatch(g)(r.group!))) return false;
+        if (this.markedCRDGVKs.some(g => g.compare(r))) return false;
+
         return allGVKs.findIndex(g => g.compare(r)) <= -1;
       });
 

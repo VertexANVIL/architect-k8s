@@ -8,8 +8,7 @@ import * as api from 'kubernetes-models';
 // eslint-disable-next-line no-duplicate-imports
 import { REGISTER_INSTANCE } from 'ts-node';
 import wcmatch from 'wildcard-match';
-import { KubeComponent } from '../../component';
-import { Resource } from '../../resource';
+import { KubeComponent, KubeComponentGenericResources } from '../../component';
 import { GVK } from '../../types';
 
 
@@ -27,7 +26,7 @@ export class CrdsComponent extends KubeComponent {
     this.standardRequirements = false;
   };
 
-  public async build(): Promise<Resource[]> {
+  public async build(resources: KubeComponentGenericResources = {}) {
     let mod: any;
     if (process[REGISTER_INSTANCE]) {
       mod = await import(`${this.module}/src/index.ts`);
@@ -47,17 +46,17 @@ export class CrdsComponent extends KubeComponent {
       const files = await fg.default([`${dir}/${group}/*.yaml`], {});
       const result: (api.apiextensionsK8sIo.v1.CustomResourceDefinition | null)[] = await Promise.all(files.map(
         async (file): Promise<api.apiextensionsK8sIo.v1.CustomResourceDefinition | null> => {
-          const resources = await this.target.loader.loadFile(file);
-          if (resources.length <= 0) return null;
+          const fileResources = await this.target.loader.loadFile(file);
+          if (fileResources.length <= 0) return null;
 
           // this will always be a CRD as our loadFile method loads the model
-          const resource = resources[0] as api.apiextensionsK8sIo.v1.CustomResourceDefinition;
+          const fileResource = fileResources[0] as api.apiextensionsK8sIo.v1.CustomResourceDefinition;
 
           // check to see if this is enabled, do wildcard matching
-          if (this.enabledGroups.some(g => wcmatch(g)(resource.spec.group))) return resource;
+          if (this.enabledGroups.some(g => wcmatch(g)(fileResource.spec.group))) return fileResource;
 
-          const gvk = GVK.fromCRD(resource);
-          if (gvk.some(g => this.enabledGVKs.findIndex(g2 => g2.compare(g)) > -1)) return resource;
+          const gvk = GVK.fromCRD(fileResource);
+          if (gvk.some(g => this.enabledGVKs.findIndex(g2 => g2.compare(g)) > -1)) return fileResource;
 
           // no matches found, this CRD is not enabled
           return null;
@@ -67,7 +66,8 @@ export class CrdsComponent extends KubeComponent {
       crds.push(...result.filter(notEmpty));
     };
 
-    return crds;
+    resources.result = crds;
+    return super.build(resources);
   };
 
   public enableGroup(group: string) {
