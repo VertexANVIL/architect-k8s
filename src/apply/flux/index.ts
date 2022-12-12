@@ -15,7 +15,7 @@ export interface FluxCDMode {
 };
 
 export class FluxCDController {
-  private readonly target: KubeTarget;
+  public readonly target: KubeTarget;
 
   constructor(target: KubeTarget) {
     this.target = target;
@@ -38,7 +38,7 @@ export class FluxCDController {
           return { name: this.componentName(d) };
         }),
         interval: '10m0s',
-        path: `./${this.target.cluster.name}/components/${rid}`,
+        path: `./components/${rid}`,
         prune: true,
         sourceRef: mode.sourceRef,
         wait: true,

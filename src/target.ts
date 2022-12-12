@@ -219,6 +219,8 @@ export class KubeTarget extends Target {
 
       const component = result.components[k];
       dependencies.forEach(d => {
+        // no self-dependencies
+        if (d.uuid === component.component.uuid) return;
         if (component.dependencies.indexOf(d) !== -1) return;
         component.dependencies.push(d);
       });
