@@ -155,7 +155,7 @@ export class KubeTarget extends Target {
       });
 
       if (missing.length > 0) {
-        throw Error(`component ${k} is attempting to use resources missing from the cluster: ${missing.join(', ')}`);
+        throw Error(`component ${k} is attempting to use resources missing from cluster ${this.cluster.name}: ${missing.join(', ')}`);
       };
     });
   };
