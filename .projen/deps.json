@@ -97,6 +97,14 @@
       "type": "override"
     },
     {
+      "name": "@types/semver",
+      "type": "peer"
+    },
+    {
+      "name": "semver",
+      "type": "peer"
+    },
+    {
       "name": "@akim/architect-k8s-crds",
       "version": "link:../architect-k8s-crds",
       "type": "runtime"

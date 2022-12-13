@@ -1,6 +1,7 @@
 import 'reflect-metadata';
 import { BaseFact } from '@akim/architect/src';
 import _ from 'lodash';
+import { SemVer } from 'semver';
 
 interface ClusterClientSpec {
   context: string;
@@ -32,29 +33,49 @@ interface ClusterMetalSpec {
   nodes?: number;
 };
 
+export enum ClusterFlavor {
+  DockerDesktop = 'docker-desktop',
+  Kind = 'kind',
+  K3s = 'k3s',
+  Talos = 'talos',
+};
+
 // TODO: potentially move the Client and Metal specs to their own Fact, for separation purposes
 export interface ClusterSpec {
   name: string;
   client: ClusterClientSpec;
   dns: string;
   platform?: string;
-  version: string;
-  metal?: ClusterMetalSpec;
+  version: SemVer;
+  metal: ClusterMetalSpec;
   ns?: ClusterNamespaceSpec;
+
+  /**
+   * The pod network configuration
+   */
+  podNetwork: {
+    ipFamilies: string[];
+  };
+
+  flavor: ClusterFlavor;
 };
 
 @Reflect.metadata('uuid', '6adbc9ab-fecc-4578-aede-1c61268bf13d')
 export class ClusterFact extends BaseFact<ClusterSpec> {
-  constructor(instance: ClusterSpec) {
+  constructor(instance: Partial<ClusterSpec>) {
     const defaults: Partial<ClusterSpec> = {
       ns: {
         features: 'infra-system',
         operators: 'operator-system',
         services: 'services',
       },
+
+      podNetwork: {
+        ipFamilies: ['IPv4'],
+      },
     };
 
     instance = _.merge(defaults, instance);
-    super(instance);
+    super(instance as ClusterSpec);
   };
 };

@@ -45,7 +45,7 @@ export class KubeTarget extends Target {
   private readonly markedCRDGVKs: GVK[] = [];
   private readonly markedCRDGroups: string[] = [];
 
-  constructor(spec: ClusterSpec, params: KubeTargetParams = {
+  constructor(spec: Partial<ClusterSpec>, params: KubeTargetParams = {
     modes: {},
   }) {
     super(params);
@@ -79,6 +79,7 @@ export class KubeTarget extends Target {
 
     const component = new CrdsComponent(this, module);
     this.components.register(CrdsComponent, component);
+    this.components.request(CrdsComponent)!.props.$set({ enable: true });
   };
 
   /**

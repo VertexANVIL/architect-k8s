@@ -11,6 +11,9 @@ export enum CNIFlavor {
 };
 
 export interface CNICapabilitySpec {
+  /**
+   * Vendor of the CNI
+   */
   flavor: string | CNIFlavor;
 };
 

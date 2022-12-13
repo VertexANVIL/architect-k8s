@@ -92,7 +92,7 @@ export abstract class KubeComponent<
   protected async helmTemplate(chart: string, values: any, config: HelmChartOpts, filter?: (v: Resource) => boolean): Promise<Resource[]> {
     config = _.merge({
       namespace: this.namespace,
-      kubeVersion: this.cluster.version,
+      kubeVersion: `v${this.cluster.version}`,
       includeCRDs: true,
       noHooks: true,
       skipTests: true,
