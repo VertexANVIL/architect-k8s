@@ -2,11 +2,11 @@
 # yarn lockfile v1
 
 
-"@akim/architect-k8s-crds@link:../architect-k8s-crds":
+"@arctarus/architect-k8s-crds@link:../architect-k8s-crds":
   version "0.0.0"
   uid ""
 
-"@akim/architect@link:../architect":
+"@arctarus/architect@link:../architect":
   version "0.0.0"
   uid ""
 

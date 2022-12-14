@@ -1,4 +1,4 @@
-import { Component, Result, Target, TargetParams, TargetResolveParams } from '@akim/architect/src';
+import { Component, Result, Target, TargetParams, TargetResolveParams } from '@arctarus/architect/src';
 import * as api from 'kubernetes-models';
 import wcmatch from 'wildcard-match';
 import { FluxCDController, FluxCDMode } from './apply/flux';
@@ -65,7 +65,7 @@ export class KubeTarget extends Target {
     this.createDefaultResources();
 
     // register the CRD module
-    this.registerCRDs('@akim/architect-k8s-crds');
+    this.registerCRDs('@arctarus/architect-k8s-crds');
   };
 
   private createDefaultResources() {

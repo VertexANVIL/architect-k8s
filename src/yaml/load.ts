@@ -1,5 +1,5 @@
 import fs from 'node:fs/promises';
-import { isRecord } from '@akim/architect/src';
+import { isRecord } from '@arctarus/architect/src';
 import stringify from 'fast-safe-stringify';
 import { loadAll } from 'js-yaml';
 

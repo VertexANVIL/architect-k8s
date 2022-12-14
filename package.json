@@ -1,5 +1,5 @@
 {
-  "name": "@akim/architect-k8s",
+  "name": "@arctarus/architect-k8s",
   "repository": {
     "type": "git",
     "url": "https://github.com/ArctarusLimited/architect-k8s.git"
@@ -51,13 +51,9 @@
     "ts-node": "^10.9.1",
     "typescript": "^4.8.4"
   },
-  "peerDependencies": {
-    "@types/semver": "^7.3.13",
-    "semver": "^7.3.8"
-  },
   "dependencies": {
-    "@akim/architect": "link:../architect",
-    "@akim/architect-k8s-crds": "link:../architect-k8s-crds",
+    "@arctarus/architect": "link:../architect",
+    "@arctarus/architect-k8s-crds": "link:../architect-k8s-crds",
     "@kubernetes-models/apimachinery": "*",
     "fast-glob": "^3.2.12",
     "fast-safe-stringify": "^2.1.1",

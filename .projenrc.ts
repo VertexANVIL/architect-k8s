@@ -7,7 +7,7 @@ const project = new typescript.TypeScriptProject({
   authorUrl: 'https://www.arctarus.co.uk',
 
   defaultReleaseBranch: 'main',
-  name: '@akim/architect-k8s',
+  name: '@arctarus/architect-k8s',
   license: 'MIT',
   repository: 'https://github.com/ArctarusLimited/architect-k8s.git',
 
@@ -27,8 +27,8 @@ const project = new typescript.TypeScriptProject({
     'wildcard-match',
     'yargs',
     '@kubernetes-models/apimachinery',
-    '@akim/architect@link:../architect',
-    '@akim/architect-k8s-crds@link:../architect-k8s-crds',
+    '@arctarus/architect@link:../architect',
+    '@arctarus/architect-k8s-crds@link:../architect-k8s-crds',
   ],
 
   devDeps: [

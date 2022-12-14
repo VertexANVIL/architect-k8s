@@ -30,7 +30,7 @@ Require `architect-k8s` from your module, then declare an entry point:
 
 ```typescript
 import path from 'path';
-import { Sequencer } from '@akim/architect/src';
+import { Sequencer } from '@arctarus/architect/src';
 
 async function main() {
   const sequencer = new Sequencer();
@@ -44,7 +44,7 @@ async function main() {
 Create a simple component that extends `KubeComponent`:
 ```typescript
 import 'reflect-metadata';
-import * as k8s from '@akim/architect-k8s/src';
+import * as k8s from '@arctarus/architect-k8s/src';
 import * as api from 'kubernetes-models';
 
 interface ExampleComponentResources {
@@ -70,7 +70,7 @@ export class ExampleComponent extends k8s.KubeComponent {
 Declare a target in the `targets` subfolder and enable your component:
 
 ```typescript
-import { KubeTarget, ClusterFlavor } from '@akim/architect-k8s/src';
+import { KubeTarget, ClusterFlavor } from '@arctarus/architect-k8s/src';
 import { SemVer } from 'semver';
 import { ExampleComponent } from './../component';
 
