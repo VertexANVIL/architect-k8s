@@ -1,5 +1,5 @@
 import 'reflect-metadata';
-import { Capability } from '@arctarus/architect/src';
+import { Capability } from '@arctarus/architect/lib';
 
 export enum LoadBalancerFlavor {
   MetalLB = 'metallb',

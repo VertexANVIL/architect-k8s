@@ -1,6 +1,6 @@
 import * as fs from 'node:fs/promises';
 import path from 'node:path';
-import { Result, Writer } from '@arctarus/architect/src';
+import { Result, Writer } from '@arctarus/architect/lib';
 import * as yaml from 'js-yaml';
 import { Resource, resourceId } from './resource';
 import { KubeTarget } from './target';

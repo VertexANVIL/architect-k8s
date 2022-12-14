@@ -1,5 +1,5 @@
 import 'reflect-metadata';
-import { BaseFact } from '@arctarus/architect/src';
+import { BaseFact } from '@arctarus/architect/lib';
 import _ from 'lodash';
 import { SemVer } from 'semver';
 

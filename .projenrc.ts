@@ -1,4 +1,5 @@
 import { typescript } from 'projen';
+import { NpmAccess } from 'projen/lib/javascript';
 
 const project = new typescript.TypeScriptProject({
   authorName: 'Arctarus Limited',
@@ -12,6 +13,8 @@ const project = new typescript.TypeScriptProject({
   repository: 'https://github.com/ArctarusLimited/architect-k8s.git',
 
   projenrcTs: true,
+  releaseToNpm: true,
+  npmAccess: NpmAccess.PUBLIC,
 
   // dependencies
   deps: [
@@ -27,8 +30,8 @@ const project = new typescript.TypeScriptProject({
     'wildcard-match',
     'yargs',
     '@kubernetes-models/apimachinery',
-    '@arctarus/architect@link:../architect',
-    '@arctarus/architect-k8s-crds@link:../architect-k8s-crds',
+    '@arctarus/architect@~0.0.14',
+    '@arctarus/architect-k8s-crds@~0.0.0',
   ],
 
   devDeps: [
@@ -40,6 +43,11 @@ const project = new typescript.TypeScriptProject({
     '@types/yargs',
     '@kubernetes-models/crd-generate',
     '@kubernetes-models/openapi-generate',
+  ],
+
+  peerDeps: [
+    '@arctarus/architect@~0.0.14',
+    '@arctarus/architect@-k8s-crds~0.0.0',
   ],
 
   // disable tests for now

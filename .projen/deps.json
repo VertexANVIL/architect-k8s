@@ -87,23 +87,18 @@
       "type": "build"
     },
     {
-      "name": "@types/responselike",
-      "version": "1.0.0",
-      "type": "override"
-    },
-    {
-      "name": "got",
-      "version": "12.3.1",
-      "type": "override"
+      "name": "@arctarus/architect",
+      "version": "-k8s-crds~0.0.0",
+      "type": "peer"
     },
     {
       "name": "@arctarus/architect-k8s-crds",
-      "version": "link:../architect-k8s-crds",
+      "version": "~0.0.0",
       "type": "runtime"
     },
     {
       "name": "@arctarus/architect",
-      "version": "link:../architect",
+      "version": "~0.0.14",
       "type": "runtime"
     },
     {

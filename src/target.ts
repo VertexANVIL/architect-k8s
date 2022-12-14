@@ -1,4 +1,4 @@
-import { Component, Result, Target, TargetParams, TargetResolveParams } from '@arctarus/architect/src';
+import { Component, Result, Target, TargetParams, TargetResolveParams } from '@arctarus/architect/lib';
 import * as api from 'kubernetes-models';
 import wcmatch from 'wildcard-match';
 import { FluxCDController, FluxCDMode } from './apply/flux';

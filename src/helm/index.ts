@@ -3,7 +3,7 @@ import * as fs from 'node:fs/promises';
 import * as os from 'os';
 import * as path from 'path';
 import * as util from 'util';
-import { cache, compositeHash } from '@arctarus/architect/src';
+import { cache, compositeHash } from '@arctarus/architect/lib';
 import * as yaml from 'js-yaml';
 
 import { Resource } from '../resource';
