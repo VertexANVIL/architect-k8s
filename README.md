@@ -15,7 +15,7 @@ This is an extension to the [Architect framework](https://github.com/ArctarusLim
 - **Helm, Kustomize, and Jsonnet support**, including caching - a feature not found on other frameworks - which intelligently caches builds based on their input values, significantly reducing compile time
 - **Component system** - define your cluster resources in logical units
   - Declare relationships between resources as dependencies which are respected when applying via FluxCD
-  - Highly flexible lazy configuration system allows components to be highly customisable and reusable
+  - Highly flexible lazy parameter system, reminiscent of Nix's structured configuration tree, allows components to be highly customisable, and reusable
 
 ## FAQ
 
@@ -24,71 +24,12 @@ This is an extension to the [Architect framework](https://github.com/ArctarusLim
   - **Pulumi** is stateful; is slow, and has too much overhead
   - **CDK8s** has a lot of overhead with how it manages resources as individual constructs and no caching for build processes
   - **Tanka** is slow when building thousands of resources with differing configuration, and doesn't support granular caching
-  - **Kosko** is too opinionated and offers no caching support
+  - **Kosko** is, unfortunately, too opinionated, and offers no caching support
+- **What was wrong with Fractal?**
+  - Fractal was a decent attempt at a framework, but it unfortunately ran into pitfalls surrounding the interactions between Nix and Kubernetes types/Jsonnet. Nix was never really built to handle or validate Kubernetes' complex models.
+  - Neither Nix nor Jsonnet were typed, so validation could only occur (slowly) either at compile time or when the manifests were applied to the cluster.
+  - The framework was also overengineered and overcomplicated, making use of Go, Nix, and Jsonnet, for different components. Here, we unify everything into TypeScript.
 
 ## Example
 
-Require `architect-k8s` from your module, then declare an entry point:
-
-```typescript
-import path from 'path';
-import { Sequencer } from '@arctarus/architect/lib';
-
-async function main() {
-  const sequencer = new Sequencer();
-  await sequencer.loadFolder(path.join(__dirname, 'targets'));
-  await sequencer.run(path.join(__dirname, '../build'));
-};
-
-(async () => { await main(); })();
-```
-
-Create a simple component that extends `KubeComponent`:
-```typescript
-import 'reflect-metadata';
-import * as k8s from '@arctarus/architect-k8s/lib';
-import * as api from 'kubernetes-models';
-
-interface ExampleComponentResources {
-  configMap?: api.v1.ConfigMap;
-};
-
-@Reflect.metadata('name', 'example')
-@Reflect.metadata('uuid', '<your-uuid-here>')
-export class ExampleComponent extends k8s.KubeComponent {
-  public async build(resources: ExampleComponentResources) {
-    resources.configMap = new api.v1.ConfigMap({
-      metadata: { name: 'example' },
-      data: {
-        foo: 'bar',
-      },
-    });
-
-    return super.build(resources);
-  };
-};
-```
-
-Declare a target in the `targets` subfolder and enable your component:
-
-```typescript
-import { KubeTarget, ClusterFlavor } from '@arctarus/architect-k8s/lib';
-import { SemVer } from 'semver';
-import { ExampleComponent } from './../component';
-
-const cluster = new KubeTarget({
-  name: 'dev-test1',
-  version: new SemVer('v1.25.2'),
-  flavor: ClusterFlavor.DockerDesktop,
-});
-
-cluster.enable(ExampleComponent);
-
-export default cluster;
-```
-
-Invoke the entry point and you should see your resources appear in the `build` folder:
-
-```bash
-node -r ts-node/register index.ts
-```
+Please see the [architect-k8s-template](https://github.com/ArctarusLimited/architect-k8s-template) repository for a starting point and a component example. You can use this repository as a template for your own clusters.
