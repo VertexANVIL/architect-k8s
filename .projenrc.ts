@@ -12,6 +12,15 @@ const project = new typescript.TypeScriptProject({
   license: 'MIT',
   repository: 'https://github.com/ArctarusLimited/architect-k8s.git',
 
+  stability: 'experimental',
+  keywords: [
+    'devops',
+    'iac',
+    'kubernetes',
+    'project',
+    'yaml',
+  ],
+
   projenrcTs: true,
   releaseToNpm: true,
   npmAccess: NpmAccess.PUBLIC,

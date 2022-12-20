@@ -72,6 +72,13 @@
     "wildcard-match": "*",
     "yargs": "^17.6.2"
   },
+  "keywords": [
+    "devops",
+    "iac",
+    "kubernetes",
+    "project",
+    "yaml"
+  ],
   "main": "lib/index.js",
   "license": "MIT",
   "publishConfig": {
