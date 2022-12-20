@@ -21,6 +21,7 @@ export function addSharedOptions(project: typescript.TypeScriptProject, app: boo
       'kubernetes-models',
       'lodash',
       'reflect-metadata',
+      'semver',
       '@kubernetes-models/crd-generate@4.0.3',
       '@kubernetes-models/openapi-generate@0.1.0',
     );
@@ -29,6 +30,7 @@ export function addSharedOptions(project: typescript.TypeScriptProject, app: boo
       'kubernetes-models@4.1.0',
       'lodash',
       'reflect-metadata',
+      'semver',
       '@arctarus/architect@~0.0.0',
       '@arctarus/architect-k8s@~0.0.0',
       '@arctarus/architect-k8s-crds@~0.0.0',
