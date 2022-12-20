@@ -126,6 +126,10 @@
       "type": "runtime"
     },
     {
+      "name": "projen",
+      "type": "runtime"
+    },
+    {
       "name": "reflect-metadata",
       "type": "runtime"
     },

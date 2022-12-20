@@ -20,6 +20,7 @@ const project = new typescript.TypeScriptProject({
   deps: [
     'kubernetes-models',
     'lodash',
+    'projen',
     'semver',
     'uuid',
     'reflect-metadata',
