@@ -1,10 +1,12 @@
 # Kubernetes module for Architect
 
+<p align="center">
+  <img src="https://img.shields.io/npm/v/@arctarus/architect-k8s" />
+</p>
+
 This is an extension to the [Architect framework](https://github.com/ArctarusLimited/architect) which allows you to define, validate, and deploy Kubernetes resources in TypeScript. It can scale to hundreds of thousand of resources and allows you to manage entire fleets of clusters in a DRY fashion.
 
 `architect-k8s` is currently in Alpha and the **API surface may change without warning** so usage in production is strongly advised against (unless you're crazy, like me).
-
-Note: We currently do not publish packages to `npm`. For development purposes, clone `architect`, `architect-k8s` and `architect-k8s-crds` to the same folder and use `yarn link` to link between each of them.
 
 ## Features
 
