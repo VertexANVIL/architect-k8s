@@ -21,7 +21,6 @@ const project = new typescript.TypeScriptProject({
     'kubernetes-models',
     'lodash',
     'projen',
-    'semver',
     'uuid',
     'reflect-metadata',
     'fast-glob',
@@ -47,6 +46,7 @@ const project = new typescript.TypeScriptProject({
   ],
 
   peerDeps: [
+    'semver@7.3.8',
     '@arctarus/architect@~0.0.14',
     '@arctarus/architect@-k8s-crds~0.0.0',
   ],

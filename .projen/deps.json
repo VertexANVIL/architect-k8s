@@ -74,6 +74,11 @@
       "type": "build"
     },
     {
+      "name": "semver",
+      "version": "7.3.8",
+      "type": "build"
+    },
+    {
       "name": "standard-version",
       "version": "^9",
       "type": "build"
@@ -89,6 +94,11 @@
     {
       "name": "@arctarus/architect",
       "version": "-k8s-crds~0.0.0",
+      "type": "peer"
+    },
+    {
+      "name": "semver",
+      "version": "7.3.8",
       "type": "peer"
     },
     {
@@ -131,10 +141,6 @@
     },
     {
       "name": "reflect-metadata",
-      "type": "runtime"
-    },
-    {
-      "name": "semver",
       "type": "runtime"
     },
     {

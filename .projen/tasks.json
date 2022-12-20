@@ -196,19 +196,19 @@
           "exec": "yarn upgrade npm-check-updates"
         },
         {
-          "exec": "npm-check-updates --dep dev --upgrade --target=minor --reject='@arctarus/architect,@arctarus/architect-k8s-crds'"
+          "exec": "npm-check-updates --dep dev --upgrade --target=minor --reject='semver,@arctarus/architect,@arctarus/architect-k8s-crds'"
         },
         {
-          "exec": "npm-check-updates --dep optional --upgrade --target=minor --reject='@arctarus/architect,@arctarus/architect-k8s-crds'"
+          "exec": "npm-check-updates --dep optional --upgrade --target=minor --reject='semver,@arctarus/architect,@arctarus/architect-k8s-crds'"
         },
         {
-          "exec": "npm-check-updates --dep peer --upgrade --target=minor --reject='@arctarus/architect,@arctarus/architect-k8s-crds'"
+          "exec": "npm-check-updates --dep peer --upgrade --target=minor --reject='semver,@arctarus/architect,@arctarus/architect-k8s-crds'"
         },
         {
-          "exec": "npm-check-updates --dep prod --upgrade --target=minor --reject='@arctarus/architect,@arctarus/architect-k8s-crds'"
+          "exec": "npm-check-updates --dep prod --upgrade --target=minor --reject='semver,@arctarus/architect,@arctarus/architect-k8s-crds'"
         },
         {
-          "exec": "npm-check-updates --dep bundle --upgrade --target=minor --reject='@arctarus/architect,@arctarus/architect-k8s-crds'"
+          "exec": "npm-check-updates --dep bundle --upgrade --target=minor --reject='semver,@arctarus/architect,@arctarus/architect-k8s-crds'"
         },
         {
           "exec": "yarn install --check-files"
