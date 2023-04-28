@@ -39,7 +39,7 @@ export abstract class KubeComponent<
       new CapabilityMatcher(DNSCapability),
     ] : [];
 
-    return def.concat([
+    return super.requirements.concat(def, [
       new ComponentMatcher(KubePreludeComponent),
     ]);
   };
