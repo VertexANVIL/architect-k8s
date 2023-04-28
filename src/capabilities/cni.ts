@@ -17,5 +17,8 @@ export interface CNICapabilitySpec {
   flavor: string | CNIFlavor;
 };
 
+/**
+ * Represents a CNI available in the cluster
+ */
 @Reflect.metadata('uuid', '97167668-f7bf-486a-bcda-f4780ea5586b')
 export class CNICapability extends Capability<CNICapabilitySpec> {};

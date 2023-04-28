@@ -22,7 +22,7 @@ export class FluxCDController {
   };
 
   private componentName(component: Component): string {
-    return `ark-c-${component.rid}`;
+    return `vtx-c-${component.rid}`;
   };
 
   public componentObject(resolved: ResolvedComponent, mode: FluxCDMode): kustomizeToolkitFluxcdIo.v1beta2.Kustomization {
