@@ -3,7 +3,8 @@ import path from 'node:path';
 import { Result, Writer } from '@arctarus/architect/lib';
 import * as yaml from 'js-yaml';
 import { Resource, resourceId } from './resource';
-import { KubeTarget } from './target';
+import { KubeTarget, KubeTargetOutputFormat } from './target';
+
 
 export class KubeWriter implements Writer {
   private readonly target: KubeTarget;
@@ -12,7 +13,24 @@ export class KubeWriter implements Writer {
     this.target = target;
   };
 
-  private async writeFlat(result: Result, dir: string) {
+  private async writeSingleFile(result: Result, dir: string) {
+    const resources = result.all as Resource[] ?? [];
+    const resource = resources.map(r => yaml.dump(r)).join('\n---\n');
+
+    await fs.writeFile(path.join(dir, 'resources.yaml'), resource);
+  };
+
+  private async writePerResource(result: Result, dir: string) {
+    const resources = result.all as Resource[] ?? [];
+    await Promise.all(resources.map(async r => {
+      const name = `${resourceId(r)}.yaml`;
+      const resource = yaml.dump(r);
+
+      await fs.writeFile(path.join(dir, name), resource);
+    }));
+  };
+
+  private async writePerComponent(result: Result, dir: string) {
     await Promise.all(Object.entries(result.components).map(async ([k, v]) => {
       const rd = path.join(dir, k);
       await fs.rm(rd, { recursive: true, force: true });
@@ -32,7 +50,7 @@ export class KubeWriter implements Writer {
 
   private async writeFluxCD(result: Result, dir: string) {
     // write all the components
-    await this.writeFlat(result, path.join(dir, 'components'));
+    await this.writePerComponent(result, path.join(dir, 'components'));
 
     // write the cluster dir
     const clusterDir = path.join(dir, 'cluster');
@@ -48,8 +66,18 @@ export class KubeWriter implements Writer {
   public async write(result: Result, dir: string) {
     if (this.target.params.modes?.flux) {
       await this.writeFluxCD(result, dir);
+      return;
+    };
+
+    const format = this.target.params.output?.format ?? KubeTargetOutputFormat.PerComponent;
+    if (format === KubeTargetOutputFormat.SingleFile) {
+      await this.writeSingleFile(result, dir);
+    } else if (format === KubeTargetOutputFormat.PerResource) {
+      await this.writePerResource(result, dir);
+    } else if (format === KubeTargetOutputFormat.PerComponent) {
+      await this.writePerComponent(result, dir);
     } else {
-      await this.writeFlat(result, dir);
+      throw new Error('invalid KubeTargetOutputFormat specified');
     };
   };
 };

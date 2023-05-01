@@ -20,9 +20,18 @@ export interface KubeCRDRequirement {
 
 export type KubeCRDRequirements = Record<string, KubeCRDRequirement>;
 
+export enum KubeTargetOutputFormat {
+  SingleFile,
+  PerResource,
+  PerComponent
+};
+
 export interface KubeTargetParams extends TargetParams {
   modes: {
     flux?: FluxCDMode;
+  };
+  output?: {
+    format?: KubeTargetOutputFormat;
   };
 };
 
@@ -47,6 +56,9 @@ export class KubeTarget extends Target {
 
   constructor(spec: Partial<ClusterSpec>, params: KubeTargetParams = {
     modes: {},
+    output: {
+      format: KubeTargetOutputFormat.PerComponent,
+    },
   }) {
     super(params);
 
