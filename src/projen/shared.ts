@@ -4,6 +4,8 @@ export function addSharedOptions(project: typescript.TypeScriptProject, app: boo
   project.addGitIgnore('build');
 
   project.addDeps(
+    '@swc/core',
+    '@swc/helpers',
     '@arctarus/architect@~0.0.0',
     '@arctarus/architect-k8s@~0.0.0',
     '@arctarus/architect-k8s-crds@~0.0.0',
@@ -57,4 +59,7 @@ export function addSharedOptions(project: typescript.TypeScriptProject, app: boo
     'tsconfig.json': true,
     'yarn.lock': true,
   });
+
+  const tsconfig = project.tryFindObjectFile('tsconfig.json');
+  tsconfig?.addOverride('ts-node', { swc: true });
 };

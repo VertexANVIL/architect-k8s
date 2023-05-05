@@ -2,7 +2,7 @@ import 'ts-node';
 import 'reflect-metadata';
 import * as fs from 'node:fs/promises';
 import path from 'path';
-import { notEmpty, Target } from '@arctarus/architect/lib';
+import { notEmpty, Target } from '@arctarus/architect/src';
 import * as fg from 'fast-glob';
 import * as api from 'kubernetes-models';
 // eslint-disable-next-line no-duplicate-imports

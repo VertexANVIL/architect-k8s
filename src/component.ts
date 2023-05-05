@@ -1,4 +1,4 @@
-import { CapabilityMatcher, Component, ComponentArgs, ComponentMatcher, IComponentMatcher, Target } from '@arctarus/architect/lib';
+import { CapabilityMatcher, Component, ComponentArgs, ComponentMatcher, IComponentMatcher, Target } from '@arctarus/architect/src';
 import _ from 'lodash';
 import { CNICapability, DNSCapability } from './capabilities';
 

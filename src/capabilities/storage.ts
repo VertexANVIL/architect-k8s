@@ -1,5 +1,5 @@
 import 'reflect-metadata';
-import { Capability } from '@arctarus/architect/lib';
+import { Capability } from '@arctarus/architect/src';
 
 /**
  * Represents an available cluster CSI driver

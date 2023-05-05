@@ -1,6 +1,6 @@
-import { kustomizeToolkitFluxcdIo } from '@arctarus/architect-k8s-crds/lib';
-import { Component } from '@arctarus/architect/lib';
-import { ResolvedComponent } from '@arctarus/architect/lib/result';
+import { Component } from '@arctarus/architect/src';
+import { ResolvedComponent } from '@arctarus/architect/src/result';
+import { kustomizeToolkitFluxcdIo } from '@arctarus/architect-k8s-crds/src';
 import { KubeTarget } from '../../target';
 
 interface FluxCDSourceRef {
