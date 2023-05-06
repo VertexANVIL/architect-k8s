@@ -1,4 +1,11 @@
-import { typescript } from 'projen';
+import { ObjectFile, typescript } from 'projen';
+
+function addPropsToTsconfig(file: ObjectFile) {
+  file.addOverride('ts-node', { swc: true });
+  file.addOverride('compilerOptions.lib', ['ES2022']);
+  file.addOverride('compilerOptions.target', 'ES2022');
+  file.addOverride('compilerOptions.useDefineForClassFields', false);
+};
 
 export function addSharedOptions(project: typescript.TypeScriptProject, app: boolean) {
   project.addGitIgnore('build');
@@ -27,11 +34,14 @@ export function addSharedOptions(project: typescript.TypeScriptProject, app: boo
       '@kubernetes-models/crd-generate@4.0.3',
       '@kubernetes-models/openapi-generate@0.1.0',
     );
+
+    project.setScript('postInstall', 'patch-package');
   } else {
     project.addPeerDeps(
       'kubernetes-models@4.1.0',
       'lodash',
       'reflect-metadata',
+      'patch-package',
       'semver',
       '@arctarus/architect@~0.0.0',
       '@arctarus/architect-k8s@~0.0.0',
@@ -61,5 +71,8 @@ export function addSharedOptions(project: typescript.TypeScriptProject, app: boo
   });
 
   const tsconfig = project.tryFindObjectFile('tsconfig.json');
-  tsconfig?.addOverride('ts-node', { swc: true });
+  if (tsconfig) addPropsToTsconfig(tsconfig);
+
+  const tsconfigDev = project.tryFindObjectFile('tsconfig.dev.json');
+  if (tsconfigDev) addPropsToTsconfig(tsconfigDev);
 };

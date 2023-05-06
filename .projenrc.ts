@@ -27,6 +27,7 @@ const project = new typescript.TypeScriptProject({
 
   // dependencies
   deps: [
+    'commander@10.0.1',
     'kubernetes-models',
     'lodash',
     'projen',
